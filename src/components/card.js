@@ -1,6 +1,15 @@
-import { popupImage, caption, imagePopup } from './index.js'
-import { openPopup } from './modal.js';
-import { putLikeToCard, deleteCard, deleteLikeToCard } from './api.js';
+import {
+  popupImage,
+  caption,
+  imagePopup
+} from './index.js'
+import {
+  openPopup
+} from './modal.js';
+
+import Api from './Api.js';
+
+const api = new Api()
 
 const elementsContainer = document.querySelector('.elements__inner');
 const cardTemplate = document.querySelector('#card-template').content;
@@ -21,9 +30,9 @@ export function createCard(userId, card) {
   likeCounter.textContent = card.likes.length;
 
 
-  likeButton.addEventListener('click', function(evt) {
+  likeButton.addEventListener('click', function (evt) {
     if (evt.target.classList.contains('elements__like_active')) {
-      deleteLikeToCard(card._id)
+      api.deleteLikeToCard(card._id)
         .then((res) => {
           evt.target.classList.toggle('elements__like_active');
           likeCounter.textContent = res.likes.length;
@@ -31,9 +40,8 @@ export function createCard(userId, card) {
         .catch((err) => {
           console.log(err)
         })
-    }
-    else {
-      putLikeToCard(card._id)
+    } else {
+      api.putLikeToCard(card._id)
         .then((res) => {
           evt.target.classList.toggle('elements__like_active');
           likeCounter.textContent = res.likes.length;
@@ -44,7 +52,7 @@ export function createCard(userId, card) {
     }
   })
 
-  if (card.likes.some(like => like._id === userId)){
+  if (card.likes.some(like => like._id === userId)) {
     likeButton.classList.add('elements__like_active');
   }
 
@@ -52,13 +60,12 @@ export function createCard(userId, card) {
 
   if (userId !== card.owner._id) {
     crossButton.remove()
-  }
-  else {
-    crossButton.addEventListener('click', function(evt) {
+  } else {
+    crossButton.addEventListener('click', function (evt) {
       const elementDelete = evt.target
       const elementItem = elementDelete.closest('.elements__container');
 
-      deleteCard(card._id)
+      api.deleteCard(card._id)
         .then(() => {
           elementItem.remove()
         })
@@ -70,7 +77,7 @@ export function createCard(userId, card) {
 
 
 
-  cardElement.addEventListener('click', function() {
+  cardElement.addEventListener('click', function () {
     popupImage.src = card.link;
     popupImage.alt = card.name;
     caption.textContent = card.name;
@@ -84,4 +91,3 @@ export function createCard(userId, card) {
 export function addCard(card) {
   elementsContainer.prepend(card);
 }
-

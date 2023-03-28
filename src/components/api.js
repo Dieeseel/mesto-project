@@ -6,119 +6,114 @@ const config = {
   }
 }
 
-function getResponseData(res) {
-  if (res.ok) {
-    return res.json();
+
+class Api {
+  constructor() {
+    console.log(config)
+    this._baseUrl = config.baseUrl
+    this._headers = config.headers
   }
-  else {
-    return Promise.reject(`Ошибка: ${res.status}`);
+  
+  _getResponseData(res) {
+    if (res.ok) {
+      return res.json();
+    } else {
+      return Promise.reject(`Ошибка: ${res.status}`);
+    }
+  }
+
+  getUserData() {
+    return fetch(`${this._baseUrl}/users/me`, {
+        headers: this._headers
+      })
+      .then((res) => {
+        return this._getResponseData(res);
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  getInitialCards() {
+    return fetch(`${this._baseUrl}/cards`, {
+        headers: this._headers
+      })
+      .then((res) => {
+        return this._getResponseData(res);
+      })
+  }
+
+  saveProfileData(nameValue, aboutValue) {
+    return fetch(`${this._baseUrl}/users/me`, {
+        method: 'PATCH',
+        headers: this._headers,
+        body: JSON.stringify({
+          name: nameValue,
+          about: aboutValue
+        })
+      })
+      .then((res) => {
+        return this._getResponseData(res);
+      })
+  }
+
+  saveNewCard(placeName, placeLink) {
+    return fetch(`${this._baseUrl}/cards`, {
+        method: 'POST',
+        headers: this._headers,
+        body: JSON.stringify({
+          name: placeName,
+          link: placeLink
+        })
+      })
+      .then((res) => {
+        return this._getResponseData(res)
+      })
+  }
+
+  putLikeToCard(cardId) {
+    return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+        method: 'PUT',
+        headers: this._headers
+      })
+      .then((res) => {
+        return this._getResponseData(res)
+      })
+  }
+
+  deleteLikeToCard(cardId) {
+    return fetch(`${this._baseUrl}/cards/likes/${cardId}`, {
+        method: 'DELETE',
+        headers: this._headers
+      })
+      .then((res) => {
+        return this._getResponseData(res)
+      })
+  }
+
+  deleteCard(cardId) {
+    return fetch(`${this._baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: this._headers
+      })
+      .then((res) => {
+        return this._getResponseData(res)
+      })
+  }
+
+  changeAvatar(avatar) {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: this._headers,
+        body: JSON.stringify({
+          avatar: avatar
+        }),
+      })
+      .then((res) => {
+        return this._getResponseData(res)
+      })
   }
 }
 
-
-function getUserData() {
-  return fetch(`${config.baseUrl}/users/me`, {
-    headers: config.headers
-  })
-    .then((res) => {
-      return getResponseData(res);
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
-
-
-function getInitialCards() {
-  return fetch(`${config.baseUrl}/cards`, {
-    headers: config.headers
-  })
-    .then((res) => {
-      return getResponseData(res);
-    })
-}
-
-
-function saveProfileData(nameValue, aboutValue) {
-  return fetch(`${config.baseUrl}/users/me`, {
-    method: 'PATCH',
-    headers: config.headers,
-    body: JSON.stringify({
-      name: nameValue,
-      about: aboutValue
-    })
-  })
-    .then((res) => {
-      return getResponseData(res);
-    })
-}
-
-
-function saveNewCard(placeName, placeLink) {
-  return fetch(`${config.baseUrl}/cards`, {
-    method: 'POST',
-    headers: config.headers,
-    body: JSON.stringify({
-      name: placeName,
-      link: placeLink
-    })
-  })
-    .then((res) => {
-      return getResponseData(res)
-    })
-}
-
-function putLikeToCard(cardId) {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-    method: 'PUT',
-    headers: config.headers
-  })
-    .then((res) => {
-      return getResponseData(res)
-    })
-}
-
-function deleteLikeToCard(cardId) {
-  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
-    method: 'DELETE',
-    headers: config.headers
-  })
-    .then((res) => {
-      return getResponseData(res)
-    })
-}
-
-
-function deleteCard(cardId) {
-  return fetch(`${config.baseUrl}/cards/${cardId}`, {
-    method: 'DELETE',
-    headers: config.headers
-  })
-    .then((res) => {
-      return getResponseData(res)
-    })
-}
-
-
-function changeAvatar(avatar) {
-  return fetch(`${config.baseUrl}/users/me/avatar`, {
-    method: 'PATCH',
-    headers: config.headers,
-    body: JSON.stringify({
-      avatar: avatar
-    }),
-  })
-    .then((res) => {
-      return getResponseData(res)
-    })
-}
-
-export {
-  getInitialCards,
-  getUserData,
-  saveProfileData,
-  saveNewCard,
-  putLikeToCard,
-  deleteCard,
-  deleteLikeToCard,
-  changeAvatar }
+module.exports = Api
+ 

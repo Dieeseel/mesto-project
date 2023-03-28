@@ -1,9 +1,26 @@
 import '../pages/index.css'
 
-import {createCard, addCard} from './card.js'
-import {openPopup, closePopup, profileName, profileProfession, profilePopup, avatarPopup} from './modal.js'
-import {enableValidation} from './validate.js'
-import { getInitialCards, saveProfileData, getUserData, saveNewCard, changeAvatar } from './api.js';
+import {
+  createCard,
+  addCard
+} from './card.js'
+
+import {
+  openPopup,
+  closePopup,
+  profileName,
+  profileProfession,
+  profilePopup,
+  avatarPopup
+} from './modal.js'
+
+import {
+  enableValidation
+} from './validate.js'
+
+import Api from './Api.js';
+
+const api = new Api()
 
 const placePopup = document.querySelector('#popup__add-card');
 const imagePopup = document.querySelector('#popup__open-img');
@@ -26,7 +43,6 @@ const avatarFormButton = document.querySelector('.profile__avatar-button');
 const avatar = document.querySelector('.profile__avatar');
 const avatarLink = avatarPopup.querySelector('#avatar-link');
 
-
 const validationSettings = {
   formSelector: '.form',
   inputSelector: '.form__input',
@@ -37,7 +53,7 @@ const validationSettings = {
 };
 
 
-const newPromises = [getUserData(), getInitialCards()]
+const newPromises = [api.getUserData(), api.getInitialCards()]
 
 Promise.all(newPromises)
   .then(([dataProfile, initialCards]) => {
@@ -57,7 +73,7 @@ Promise.all(newPromises)
 
 
 
-profileFormButton.addEventListener('click', function() {
+profileFormButton.addEventListener('click', function () {
   nameFormField.value = profileName.textContent;
   professionFormField.value = profileProfession.textContent;
 
@@ -66,17 +82,17 @@ profileFormButton.addEventListener('click', function() {
 
 
 
-placeFormButton.addEventListener('click', function() {
+placeFormButton.addEventListener('click', function () {
   openPopup(placePopup);
 })
 
 
-avatarFormButton.addEventListener('click', function() {
+avatarFormButton.addEventListener('click', function () {
   openPopup(avatarPopup);
 })
 
 
-crossPopupButtons.forEach(function(button) {
+crossPopupButtons.forEach(function (button) {
   const popup = button.closest('.popup');
   button.addEventListener('click', () => closePopup(popup));
 })
@@ -86,7 +102,7 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
   profileButtonSubmit.textContent = 'Сохранение...';
-  saveProfileData(nameFormField.value, professionFormField.value)
+  api.saveProfileData(nameFormField.value, professionFormField.value)
     .then((data) => {
       profileName.textContent = data.name;
       profileProfession.textContent = data.about;
@@ -106,7 +122,7 @@ function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
 
   avatarButtonSubmit.textContent = 'Сохранение...';
-  changeAvatar(avatarLink.value)
+  api.changeAvatar(avatarLink.value)
     .then((res) => {
       avatar.src = res.avatar;
       closePopup(avatarPopup);
@@ -116,17 +132,17 @@ function handleAvatarFormSubmit(evt) {
       console.log(err)
     })
     .finally(() => {
-      avatarButtonSubmit.textContent  = 'Сохранение';
+      avatarButtonSubmit.textContent = 'Сохранение';
     })
 }
 
 
 
-placeFormElement.addEventListener('submit', function(evt) {
+placeFormElement.addEventListener('submit', function (evt) {
   evt.preventDefault();
 
   placeButtonSubmit.textContent = 'Сохранение...';
-  saveNewCard(cardName.value, cardLink.value)
+  api.saveNewCard(cardName.value, cardLink.value)
     .then((card) => {
       const userId = card.owner._id;
 
@@ -150,5 +166,9 @@ avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
 
 
 enableValidation(validationSettings)
-export {validationSettings, popupImage, caption, imagePopup}
-
+export {
+  validationSettings,
+  popupImage,
+  caption,
+  imagePopup
+}
