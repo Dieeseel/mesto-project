@@ -8,8 +8,7 @@ const config = {
 
 
 class Api {
-  constructor() {
-    console.log(config)
+  constructor() {    
     this._baseUrl = config.baseUrl
     this._headers = config.headers
   }

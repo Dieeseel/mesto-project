@@ -1,9 +1,14 @@
 import '../pages/index.css'
 
 import {
-  createCard,
-  addCard
-} from './card.js'
+  // createCard,
+  // addCard,
+  Card
+} from './Card.js'
+
+import {
+  UserInfo
+} from './UserInfo'
 
 import {
   openPopup,
@@ -21,6 +26,9 @@ import {
 import Api from './Api.js';
 
 const api = new Api()
+
+import Section from './Section'
+
 
 const placePopup = document.querySelector('#popup__add-card');
 const imagePopup = document.querySelector('#popup__open-img');
@@ -54,29 +62,33 @@ const validationSettings = {
 
 
 const newPromises = [api.getUserData(), api.getInitialCards()]
-
+let userId = ""
+const userInfo = new UserInfo('.profile__title', '.profile__subtitle', '.profile__avatar', api)
+let section = ""
 Promise.all(newPromises)
   .then(([dataProfile, initialCards]) => {
-    const userId = dataProfile._id
-    profileName.textContent = dataProfile.name;
-    profileProfession.textContent = dataProfile.about;
-    avatar.src = dataProfile.avatar;
+    userId = dataProfile._id
+     section = new Section({
+      initialCards,
+      renderer
+    }, '.elements__inner')
 
-    initialCards.forEach((card) => {
-      addCard(createCard(userId, card));
-    })
-  })
-  .catch((err) => {
+  }).catch((err) => {
     console.log(err)
   })
 
-
+function renderer(items, target) {
+  items.forEach((item) => {
+    const card = new Card(userId, item, '.card-template', api)
+    const cardElement = card.generate();
+    document.querySelector(target).append(cardElement); // это тоже должно быть через секцию
+  });
+}
 
 
 profileFormButton.addEventListener('click', function () {
   nameFormField.value = profileName.textContent;
   professionFormField.value = profileProfession.textContent;
-
   openPopup(profilePopup);
 });
 
@@ -91,79 +103,57 @@ avatarFormButton.addEventListener('click', function () {
   openPopup(avatarPopup);
 })
 
-
 crossPopupButtons.forEach(function (button) {
   const popup = button.closest('.popup');
   button.addEventListener('click', () => closePopup(popup));
 })
 
-
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-
   profileButtonSubmit.textContent = 'Сохранение...';
-  api.saveProfileData(nameFormField.value, professionFormField.value)
-    .then((data) => {
-      profileName.textContent = data.name;
-      profileProfession.textContent = data.about;
-      closePopup(profilePopup);
-      evt.target.reset();
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    .finally(() => {
-      profileButtonSubmit.textContent = 'Сохранение';
-    })
+  userInfo.setUserInfo({
+    name: nameFormField.value,
+    about: professionFormField.value
+  }).then(data => {
+    console.log(data)
+    closePopup(profilePopup);
+    evt.target.reset();
+    profileButtonSubmit.textContent = 'Сохранение';
+  })
 }
-
 
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
-
   avatarButtonSubmit.textContent = 'Сохранение...';
-  api.changeAvatar(avatarLink.value)
-    .then((res) => {
-      avatar.src = res.avatar;
-      closePopup(avatarPopup);
-      evt.target.reset();
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    .finally(() => {
-      avatarButtonSubmit.textContent = 'Сохранение';
-    })
+  userInfo.setAvatar(avatarLink.value).then(resp => {
+    closePopup(avatarPopup);
+    evt.target.reset();
+    avatarButtonSubmit.textContent = 'Сохранение';
+  })
 }
-
-
 
 placeFormElement.addEventListener('submit', function (evt) {
   evt.preventDefault();
 
   placeButtonSubmit.textContent = 'Сохранение...';
-  api.saveNewCard(cardName.value, cardLink.value)
-    .then((card) => {
-      const userId = card.owner._id;
 
-      addCard(createCard(userId, card));
-      closePopup(placePopup);
-      evt.target.reset();
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    .finally(() => {
-      placeButtonSubmit.textContent = 'Сохранение';
-    })
+  let newCard = new Card(userId, {
+    name: cardName.value,
+    link: cardLink.value
+  }, '.card-template', api)
+  const newCardElement = newCard.generate();
+  newCard.pushCardInfoToServer().then(data => {
+    console.log(data)
+    console.log(section)
+    section.addItem(newCardElement)
+    closePopup(placePopup);
+    evt.target.reset();
+    placeButtonSubmit.textContent = 'Сохранить';
+  })
 })
-
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit);
 avatarFormElement.addEventListener('submit', handleAvatarFormSubmit);
-
-
-
 
 enableValidation(validationSettings)
 export {
