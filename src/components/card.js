@@ -1,20 +1,10 @@
-import {
-  popupImage, // Это все должно быть через связываение колбеком popupa
-  caption,
-  imagePopup
-} from './index.js'
-import {
-  openPopup
-} from './modal.js';
-
-
-
 class Card {
-  constructor(userId, card, selector, api) {
+  constructor(userId, card, selector, api, popupWithImage) {
     this.userId = userId
     this.card = card
     this.templateSelector = selector
     this.api = api
+    this.popupWithImage = popupWithImage
   }
 
   _getCard() {
@@ -24,17 +14,6 @@ class Card {
       .querySelector('.elements__container')
       .cloneNode(true);
     return cardElement;
-  }
-
-  pushCardInfoToServer() {
-    return new Promise((resolve, reject) => {
-      this.api.saveNewCard(this.card.name, this.card.link).then(resp => {
-        this.card = resp
-        resolve(resp)
-      }).catch(error => {
-        reject(error)
-      })
-    })
   }
 
   generate() {
@@ -57,13 +36,9 @@ class Card {
   }
 
   _setEventListeners() {
-    // open popup listener  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    this._element.querySelector('.elements__item').addEventListener('click', function (evt) {
-      console.log(evt.target)
-      popupImage.src = evt.target.src;
-      popupImage.alt = evt.target.alt;
-      caption.textContent = evt.target.alt;
-      openPopup(imagePopup);
+    // open view popup
+    this._element.querySelector('.elements__item').addEventListener('click',  (evt)=> {        
+      this.popupWithImage.open(evt.target.src, evt.target.alt)
     })
 
     // handle like
