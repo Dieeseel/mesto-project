@@ -1,62 +1,79 @@
-class Card {
-  constructor(userId, card, selector, api, popupWithImage) {
-    this.userId = userId
-    this.card = card
-    this.templateSelector = selector
+export default class Card {
+  constructor(data, userId, api, popupWithImage, selector) {
+    this._title = data.name;
+    this._link = data.link;
+    this._cardId = data._id;
+    this._likes = data.likes;
+    this._selector = selector;
+    this._userId = userId;
+    this._owner = data.owner._id
+    this.popupWithImage = popupWithImage;
     this.api = api
-    this.popupWithImage = popupWithImage
   }
 
   _getCard() {
     const cardElement = document
-      .querySelector(this.templateSelector)
+      .querySelector(this._selector)
       .content
       .querySelector('.elements__container')
       .cloneNode(true);
+
     return cardElement;
   }
 
   generate() {
     this._element = this._getCard();
-    this._element.querySelector('.elements__title').textContent = this.card.name
-    this._element.querySelector('.elements__item').src = this.card.link
-    this._element.querySelector('.elements__item').setAttribute('__id', this.card._id)
-    this._element.querySelector('.elements__item').alt = this.card.name
+    this._image = this._element.querySelector('.elements__item');
+    this._likeCounter = this._element.querySelector('.elements__like-counter');
+    this._likeButton = this._element.querySelector('.elements__like');
+    this._deleteButton = this._element.querySelector('.elements__delete')
 
-    if (this.card.likes) {
-      this._element.querySelector('.elements__like-counter').textContent = this.card.likes.length
-      if (this.card.likes.some(like => like._id === this.userId)) {
-        this._element.querySelector('.elements__like').classList.add('elements__like_active');
-      }
-    } else {
-      this._element.querySelector('.elements__like-counter').textContent = "0"
-    }
+    this._element.querySelector('.elements__title').textContent = this._title;
+    this._image.src = this._link;
+    this._image.alt = this._title;
+    this._likeCounter.textContent = this._likes.length
+
+
+    this._renderLikeButton();
+    this._renderDeleteButton();
     this._setEventListeners();
+
     return this._element;
   }
 
+  _renderLikeButton() {
+    if (this._likes.some(like => like._id === this._userId)) {
+      this._likeButton.classList.add('elements__like_active')
+    }
+  }
+
+  _renderDeleteButton() {
+    if (this._userId !== this._owner) {
+      this._deleteButton.remove()
+    }
+  }
+
   _setEventListeners() {
-    // open view popup
-    this._element.querySelector('.elements__item').addEventListener('click',  (evt)=> {        
+    this._image.addEventListener('click',  (evt) => {
       this.popupWithImage.open(evt.target.src, evt.target.alt)
     })
 
-    // handle like
-    this._element.querySelector('.elements__like').addEventListener('click', (evt) => {
+    this._likeButton.addEventListener('click', (evt) => {
       if (evt.target.classList.contains('elements__like_active')) {
-        this.api.deleteLikeToCard(this.card._id)
+        this.api.deleteLikeToCard(this._cardId)
           .then((res) => {
             evt.target.classList.toggle('elements__like_active');
-            this._element.querySelector('.elements__like-counter').textContent = res.likes.length;
+            this._likeCounter.textContent = res.likes.length;
           })
           .catch((err) => {
             console.log(err)
           })
-      } else {
-        this.api.putLikeToCard(this.card._id)
+      }
+      else {
+        this.api.putLikeToCard(this._cardId)
           .then((res) => {
             evt.target.classList.toggle('elements__like_active');
-            this._element.querySelector('.elements__like-counter').textContent = res.likes.length;
+            this._likeCounter.textContent = res.likes.length;
           })
           .catch((err) => {
             console.log(err)
@@ -64,24 +81,16 @@ class Card {
       }
     })
 
-    // delete if available
-    if (this.card.owner && this.userId !== this.card.owner._id) {
-      this._element.querySelector('.elements__delete').remove()
-    } else {
-      this._element.querySelector('.elements__delete').addEventListener('click', (evt) => {
-        const elementItem = this._element.closest('.elements__container');
-        this.api.deleteCard(this.card._id)
-          .then(() => {
-            elementItem.remove()
-          })
-          .catch((res) => {
-            console.log(res)
-          })
-      })
-    }
+    this._deleteButton.addEventListener('click', (evt) => {
+      const elementItem = this._element.closest('.elements__container');
+      this.api.deleteCard(this._cardId)
+        .then(() => {
+          elementItem.remove()
+        })
+        .catch((res) => {
+          console.log(res)
+        })
+    })
   }
 }
 
-export {
-  Card
-}

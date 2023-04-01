@@ -1,8 +1,8 @@
 import '../pages/index.css'
 import { configApi, validationSettings, profileFormButton, placeFormButton, avatarFormButton } from '../utils/constants.js'
-import { Api } from './Api.js'
-import { Section } from './Section.js'
-import { Card } from './Card.js'
+import { Api } from './api.js'
+import Section from './Section.js'
+import Card from './Card.js'
 import { UserInfo } from './UserInfo.js'
 import { FormValidator } from './FormValidator.js'
 import { PopupWithImage, PopupWithForm } from './Popup.js'
@@ -20,33 +20,31 @@ const validatorPopupChangeAvatar = new FormValidator(validationSettings, popupCh
 
 const api = new Api(configApi)
 
-
 const newPromises = [api.getUserData(), api.getInitialCards()]
 let userId = ""
 const userInfo = new UserInfo('.profile__title', '.profile__subtitle', '.profile__avatar', api)
 let section = ""
 
+
+
+
 Promise.all(newPromises)
   .then(([dataProfile, initialCards]) => {
-    userId = dataProfile._id
-    section = new Section({
-      initialCards,
-      renderer
-    }, '.elements__inner')
+    const userId = dataProfile._id
+    const defaultCardList = new Section({
+      data: initialCards,
+      renderer: (item) => {
+        const card = new Card(item, userId, api ,popupWithImage, '.card-template');
+        const cardElement = card.generate();
+        defaultCardList.addItem(cardElement)
+      }
+    }, '.elements__inner');
+    defaultCardList.renderItems()
 
   }).catch((err) => {
     console.log(err)
   })
 
-function renderer(items, target) {
-  items.forEach((item) => {
-    const card = new Card(userId, item, '.card-template', api, popupWithImage)
-    const cardElement = card.generate();
-    document.querySelector(target).append(cardElement); // это тоже должно быть через секцию
-  });
-}
-
-// ######################################################################################
 
 profileFormButton.addEventListener('click', function () {
   popupEditProfile.open()
