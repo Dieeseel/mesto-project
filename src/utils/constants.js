@@ -6,6 +6,8 @@ const profileName = document.querySelector('.profile__title');
 const profileProfession = document.querySelector('.profile__subtitle');
 const profilePopup = document.querySelector('#popup__edit-profile');
 const avatarPopup = document.querySelector('#popup__avatar');
+const profileButtonSubmit = profilePopup.querySelector('.form__submit-button');
+
 
 const configApi = {
   baseUrl: 'https://nomoreparties.co/v1/plus-cohort-21',
@@ -35,5 +37,6 @@ export {
   profileName,
   profileProfession,
   profilePopup,
-  avatarPopup
+  avatarPopup,
+  profileButtonSubmit
  }

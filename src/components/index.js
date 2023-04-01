@@ -1,12 +1,12 @@
 import '../pages/index.css'
-import { configApi, validationSettings, profileFormButton, placeFormButton, avatarFormButton } from '../utils/constants.js'
+import { configApi, validationSettings, profileFormButton, placeFormButton, avatarFormButton, profileButtonSubmit, profileName, profileProfession } from '../utils/constants.js'
 import { Api } from './api.js'
 import Section from './Section.js'
 import Card from './Card.js'
 import { UserInfo } from './UserInfo.js'
 import { FormValidator } from './FormValidator.js'
-import { PopupWithImage, PopupWithForm } from './Popup.js'
-
+import { PopupWithImage } from './PopupWithImage.js'
+import { PopupWithForm } from './PopupWithForm.js'
 
 //Объявление экземпляром классов
 const popupWithImage = new PopupWithImage('.popup__open-image')
@@ -51,12 +51,23 @@ profileFormButton.addEventListener('click', function () {
 });
 
 function handleProfileFormSubmit(data) {
-  userInfo.setUserInfo(data).then(data => {
+  profileButtonSubmit.textContent = 'Сохранение...';
+  userInfo.setUserInfo(data)
+    .then(data => {
+      profileName.textContent = data.name;
+      profileProfession.textContent = data.about;
+    })
+    .catch((err) => {
+       console.log(err)
+    })
+    .finally(() => {
+      profileButtonSubmit.textContent = 'Сохранение';
+    })
     popupEditProfile.close()
-  })
-}
+  }
 
-// ######################################################################################
+
+
 
 placeFormButton.addEventListener('click', () => {
   popupAddCard.open();
@@ -72,7 +83,6 @@ function handleNewPlaceFormSubmit(data) {
   popupAddCard.close()
 }
 
-// ######################################################################################
 
 avatarFormButton.addEventListener('click', function () {
   popupChangeAvatar.open();
@@ -84,5 +94,5 @@ function handleAvatarFormSubmit(data) {
   })
 }
 
-// ######################################################################################
+
 
