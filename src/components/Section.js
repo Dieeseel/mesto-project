@@ -1,4 +1,4 @@
-export default class Section {
+class Section {
   constructor(
     data, htmlSelector) {
     this.items = data.items
@@ -13,3 +13,5 @@ export default class Section {
     document.querySelector(this.htmlSelector).prepend(item)
   }
 }
+
+export { Section }

@@ -1,31 +1,14 @@
 import '../pages/index.css'
+import { configApi, validationSettings, profileFormButton, placeFormButton, avatarFormButton } from '../utils/constants.js'
+import { Api } from './Api.js'
+import { Section } from './Section.js'
+import { Card } from './Card.js'
+import { UserInfo } from './UserInfo.js'
+import { FormValidator } from './FormValidator.js'
+import { PopupWithImage, PopupWithForm } from './Popup.js'
 
-import {
-  Card
-} from './Card.js'
 
-import {
-  UserInfo
-} from './UserInfo'
-
-import {
-  FormValidator
-} from './FormValidator.js'
-
-const validationSettings = {
-  formSelector: '.form',
-  inputSelector: '.form__input',
-  submitButtonSelector: '.form__submit-button',
-  inactiveButtonClass: 'form__submit-button_disabled',
-  inputErrorClass: 'form__input_type_error',
-  errorClass: 'form__field-error_active'
-};
-
-import {
-  PopupWithImage,
-  PopupWithForm
-} from './Popup.js'
-
+//Объявление экземпляром классов
 const popupWithImage = new PopupWithImage('.popup__open-image')
 const popupEditProfile = new PopupWithForm('.popup__edit-profile', handleProfileFormSubmit)
 const popupAddCard = new PopupWithForm('.popup__add-card', handleNewPlaceFormSubmit)
@@ -35,18 +18,7 @@ const validatorPopupEditProfile = new FormValidator(validationSettings, popupEdi
 const validatorPopupAddCard = new FormValidator(validationSettings, popupAddCard.form)
 const validatorPopupChangeAvatar = new FormValidator(validationSettings, popupChangeAvatar.form)
 
-import Api from './Api.js';
-
-const api = new Api()
-
-import Section from './Section'
-
-
-const profileFormButton = document.querySelector('.profile__edit-button');
-const placeFormButton = document.querySelector('.profile__add-button');
-const avatarFormButton = document.querySelector('.profile__avatar-button');
-
-
+const api = new Api(configApi)
 
 
 const newPromises = [api.getUserData(), api.getInitialCards()]
@@ -115,5 +87,4 @@ function handleAvatarFormSubmit(data) {
 }
 
 // ######################################################################################
-
 

@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:Dieeseel/mesto-project.git"
+    "url": "git+ssh://git@github.com/Dieeseel/mesto-project.git"
   },
   "author": "Artem Sobolevskiy",
   "license": "ISC",
@@ -33,5 +33,9 @@
   },
   "dependencies": {
     "core-js": "^3.29.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/Dieeseel/mesto-project/issues"
+  },
+  "homepage": "https://github.com/Dieeseel/mesto-project#readme"
 }

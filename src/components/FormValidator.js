@@ -1,12 +1,3 @@
-let example = {
-  formSelector: '.form',
-  inputSelector: '.form__input',
-  submitButtonSelector: '.form__submit-button',
-  inactiveButtonClass: 'form__submit-button_disabled',
-  inputErrorClass: 'form__input_type_error',
-  errorClass: 'form__field-error_active'
-}
-
 class FormValidator {
   constructor(config, formInstance) {
     this.config = config
@@ -16,7 +7,7 @@ class FormValidator {
 
   enableValidation() {
     const formList = Array.from(document.querySelectorAll(this.config.formSelector));
-    formList.forEach(formElement => {      
+    formList.forEach(formElement => {
       this.setValidationEventListener(formElement, this.config);
     })
   }
