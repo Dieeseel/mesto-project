@@ -31,15 +31,15 @@ let section = ""
 Promise.all(newPromises)
   .then(([dataProfile, initialCards]) => {
     const userId = dataProfile._id
-    const defaultCardList = new Section({
+    section = new Section({
       data: initialCards,
       renderer: (item) => {
-        const card = new Card(item, userId, api ,popupWithImage, '.card-template');
+        const card = new Card(item, userId, api, popupWithImage, '.card-template');
         const cardElement = card.generate();
-        defaultCardList.addItem(cardElement)
+        section.addItem(cardElement)
       }
     }, '.elements__inner');
-    defaultCardList.renderItems()
+    section.renderItems()
 
   }).catch((err) => {
     console.log(err)
@@ -51,23 +51,16 @@ profileFormButton.addEventListener('click', function () {
 });
 
 function handleProfileFormSubmit(data) {
-  profileButtonSubmit.textContent = 'Сохранение...';
   userInfo.setUserInfo(data)
     .then(data => {
       profileName.textContent = data.name;
       profileProfession.textContent = data.about;
+      popupEditProfile.close()
     })
     .catch((err) => {
        console.log(err)
     })
-    .finally(() => {
-      profileButtonSubmit.textContent = 'Сохранение';
-    })
-    popupEditProfile.close()
   }
-
-
-
 
 placeFormButton.addEventListener('click', () => {
   popupAddCard.open();
@@ -75,12 +68,11 @@ placeFormButton.addEventListener('click', () => {
 
 function handleNewPlaceFormSubmit(data) {
   api.saveNewCard(data.name, data.link).then(resp => {
-    console.log(resp)
-    let newCard = new Card(userId, resp, '.card-template', api, popupWithImage)
+    const newCard = new Card(resp, resp.owner._id, api, popupWithImage, '.card-template')
     const newCardElement = newCard.generate();
-    section.addItem(newCardElement)
+    section.addItem(newCardElement);
+    popupAddCard.close()
   })
-  popupAddCard.close()
 }
 
 

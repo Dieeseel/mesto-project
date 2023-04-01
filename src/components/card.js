@@ -1,14 +1,15 @@
 export default class Card {
   constructor(data, userId, api, popupWithImage, selector) {
+    console.log(userId)
     this._title = data.name;
     this._link = data.link;
     this._cardId = data._id;
     this._likes = data.likes;
-    this._selector = selector;
+    this._owner = data.owner._id;
     this._userId = userId;
-    this._owner = data.owner._id
-    this.popupWithImage = popupWithImage;
-    this.api = api
+    this.api = api;
+    this.popupWithImage = popupWithImage; 
+    this._selector = selector;
   }
 
   _getCard() {
