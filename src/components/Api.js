@@ -1,7 +1,7 @@
 class Api {
-  constructor(config) {
-    this._baseUrl = config.baseUrl
-    this._headers = config.headers
+  constructor(options) {
+    this._baseUrl = options.baseUrl
+    this._headers = options.headers
   }
 
   _getResponseData(res) {
@@ -18,9 +18,6 @@ class Api {
       })
       .then((res) => {
         return this._getResponseData(res);
-      })
-      .catch((err) => {
-        console.log(err)
       })
   }
 
@@ -104,7 +101,5 @@ class Api {
       })
   }
 }
-
-
 
 export { Api }

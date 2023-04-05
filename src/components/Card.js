@@ -1,20 +1,18 @@
-export default class Card {
-  constructor(data, userId, api, popupWithImage, selector) {
-    console.log(userId)
-    this._title = data.name;
-    this._link = data.link;
-    this._cardId = data._id;
-    this._likes = data.likes;
-    this._owner = data.owner._id;
+class Card {
+  constructor({ itemData, userId, api }, popupWithImage, selector) {
+    this._title = itemData.name;
+    this._link = itemData.link;
+    this._cardId = itemData._id
     this._userId = userId;
-    this.api = api;
-    this.popupWithImage = popupWithImage; 
+    this._likes = itemData.likes;
+    this._owner = itemData.owner._id;
+    this._api = api;
+    this.handleCardClick = popupWithImage;
     this._selector = selector;
   }
 
   _getCard() {
-    const cardElement = document
-      .querySelector(this._selector)
+    const cardElement = document.querySelector(this._selector)
       .content
       .querySelector('.elements__container')
       .cloneNode(true);
@@ -32,14 +30,13 @@ export default class Card {
     this._element.querySelector('.elements__title').textContent = this._title;
     this._image.src = this._link;
     this._image.alt = this._title;
-    this._likeCounter.textContent = this._likes.length
-
+    this._likeCounter.textContent = this._likes.length;
 
     this._renderLikeButton();
     this._renderDeleteButton();
     this._setEventListeners();
 
-    return this._element;
+    return this._element
   }
 
   _renderLikeButton() {
@@ -55,13 +52,13 @@ export default class Card {
   }
 
   _setEventListeners() {
-    this._image.addEventListener('click',  (evt) => {
-      this.popupWithImage.open(evt.target.src, evt.target.alt)
+    this._image.addEventListener('click', (evt) => {
+      this.handleCardClick.open(evt.target.src, evt.target.alt)
     })
 
     this._likeButton.addEventListener('click', (evt) => {
       if (evt.target.classList.contains('elements__like_active')) {
-        this.api.deleteLikeToCard(this._cardId)
+        this._api.deleteLikeToCard(this._cardId)
           .then((res) => {
             evt.target.classList.toggle('elements__like_active');
             this._likeCounter.textContent = res.likes.length;
@@ -71,7 +68,7 @@ export default class Card {
           })
       }
       else {
-        this.api.putLikeToCard(this._cardId)
+        this._api.putLikeToCard(this._cardId)
           .then((res) => {
             evt.target.classList.toggle('elements__like_active');
             this._likeCounter.textContent = res.likes.length;
@@ -84,7 +81,7 @@ export default class Card {
 
     this._deleteButton.addEventListener('click', (evt) => {
       const elementItem = this._element.closest('.elements__container');
-      this.api.deleteCard(this._cardId)
+      this._api.deleteCard(this._cardId)
         .then(() => {
           elementItem.remove()
         })
@@ -95,3 +92,4 @@ export default class Card {
   }
 }
 
+export { Card }
